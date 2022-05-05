@@ -1,0 +1,10 @@
+#!/bin/bash
+# Sample DHCP/TFTP notification script for use with dnsmasq.
+
+read -d '' -r PAYLOAD <<EOM
+Args: "$*"
+Environment:
+`set`
+EOM
+
+echo "$PAYLOAD" > /tmp/t

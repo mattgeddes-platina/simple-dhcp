@@ -1,0 +1,65 @@
+---
+- name: Package present
+  ansible.builtin.package:
+    name:
+      - dnsmasq
+    state: "{{ dhcp_state | default('present') }}"
+  tags:
+    - role
+
+- name: Base configuration file present
+  ansible.builtin.template:
+    dest: "{{ dhcp_config_file | default('/etc/dnsmasq.conf') }}"
+    src: "dnsmasq.conf.j2"
+  when: dhcp_state != 'absent'
+  tags:
+    - role
+
+- name: Base configuration file absent
+  file:
+    path: "{{ dhcp_config_file | default('/etc/dnsmasq.conf') }}"
+    state: absent
+  when: dhcp_state == 'absent'
+  tags:
+    - role
+
+# Convenience tasks to turn {{ dhcp_state }} into a couple of corresponding
+# variables. Default to the started/enabled state if not specified.
+- ansible.builtin.set_fact:
+    dhcp_started: started
+    dhcp_enabled: true
+  when: dhcp_state != 'absent'
+  tags:
+    - role
+    - policy
+
+- ansible.builtin.set_fact:
+    dhcp_started: stopped
+    dhcp_enabled: false
+  when: dhcp_state == 'absent'
+
+- name: Service state
+  ansible.builtin.systemd:
+    name: dnsmasq
+    enabled: "{{ dhcp_enabled }}"
+    state: "{{ dhcp_started }}"
+  tags:
+    - role
+
+- name: Notification script
+  ansible.builtin.template:
+    src: "dnsmasq-notification.j2"
+    dest: "/etc/dnsmasq-notification"
+    mode: 0755
+  tags:
+    - role
+
+- name: DHCP leases present
+  ansible.builtin.template:
+    src: "dnsmasq-host-leases.conf.j2"
+    dest: "{{ dhcp_config_directory | default('/etc/dnsmasq.d') }}/static-leases.conf"
+  when: dhcp_state != 'absent'
+  tags:
+    - policy
+
+# TODO: Add handler to be called when config file(s) are changed.

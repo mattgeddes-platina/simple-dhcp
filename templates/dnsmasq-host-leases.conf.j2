@@ -1,0 +1,21 @@
+# We bind to specific network interfaces, and set the DHCP range for each to be
+# the IP address of that interface and to mark it as a static range (ie, no
+# dynamic address pool).
+#
+# We also tag it with the interface name. This is unlikely to be used elsewhere
+# in this DHCP configuration, but these tags do get passed to any notification
+# script present. It may be very useful for the receipient of these
+# notifications to know where the request came from.
+{% for interface in dhcp_interfaces -%}
+interface={{ interface.name }}
+dhcp-range=set:{{ interface.name }},{{ interface.address }},static
+{% endfor -%}
+
+# Here we have the per-MAC DHCP leases. We also set tags here too if present.
+# This potentially gives us a way to identify each lease by name in any present
+# notification script, or elsewhere in this DHCP configuration. We also set the
+# hostname to this name, if present, as a way to connect the dots if the host
+# shows up elsewhere on the network.
+{% for lease in dhcp_leases -%}
+dhcp-host={{ lease.mac }},{{ 'set:' + lease.name + ',' if 'name' in lease }}{{ lease.ip }},{{ lease.name + "," if 'name' in lease }}{{ dhcp_leasetime | default('1h') }}
+{% endfor -%}

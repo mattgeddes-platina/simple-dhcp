@@ -1,0 +1,10 @@
+## Automatically-generated dnsmasq global configuration file. This is as minimal
+## as possible, allowing other automation/orchestration to manage components of
+## this service through config fragments in {{ dhcp_config_directory | default('/etc/dnsmasq.d') }}
+
+bind-interfaces
+
+# Script for DHCP and TFTP notifications
+dhcp-script=/etc/dnsmasq-notification
+
+conf-dir={{ dhcp_config_directory | default('/etc/dnsmasq.d') }},*.conf
