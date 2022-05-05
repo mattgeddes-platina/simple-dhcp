@@ -1,10 +1,22 @@
 #!/bin/bash
-# Sample DHCP/TFTP notification script for use with dnsmasq.
+# Sample DHCP/TFTP notification script for use with dnsmasq. See dnsmasq man
+# page for specifics.
 
-read -d '' -r PAYLOAD <<EOM
+dhcp_lease(){
+    read -d '' -r PAYLOAD <<EOM
 Args: "$*"
 Environment:
 `set`
 EOM
 
-echo "$PAYLOAD" > /tmp/t
+    # TODO: more likely that we'd want to use something like curl to submit this
+    # somewhere
+    echo "$PAYLOAD" > /tmp/t
+}
+
+case "$1" in
+    add|old)
+	# DHCP lease
+	dhcp_lease "$@"
+    ;;
+esac
