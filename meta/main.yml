@@ -1,3 +1,4 @@
+---
 galaxy_info:
   author: Matthew Geddes
   description: Simple DHCP Server with static leases and notification script.
@@ -5,15 +6,15 @@ galaxy_info:
   license: Apache-2.0
   min_ansible_version: 2.9
   platforms:
-   - name: Fedora
-     versions:
-     - all
-   - name: Ubuntu
-     versions:
-     - all
-   - name: Debian
-     versions:
-     - all
+    - name: Fedora
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
 
-  galaxy_tags: ["dhcp","dnsmasq","static"]
-dependencies: []
+  galaxy_tags: ["dhcp", "dnsmasq", "static"]
+  dependencies: []
